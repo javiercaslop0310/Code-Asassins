@@ -18,11 +18,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Desactivamos CSRF para facilitar pruebas en APIs REST
+            .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().authenticated() // Exige login para cualquier petición
+                // 1. Dejar la puerta abierta para CORS (Peticiones OPTIONS de Angular)
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                // 2. Dejar la puerta abierta para que Swagger sea público
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                // 3. Exigir login para todo lo demás (Tus endpoints de /api/proyectos y /api/tareas)
+                .anyRequest().authenticated() 
             )
-            .httpBasic(Customizer.withDefaults()); // Usa autenticación básica (Headers)
+            .httpBasic(Customizer.withDefaults()); 
 
         return http.build();
     }
