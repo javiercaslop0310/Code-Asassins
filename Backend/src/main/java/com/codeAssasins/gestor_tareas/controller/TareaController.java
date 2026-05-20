@@ -1,32 +1,33 @@
 package com.codeAssasins.gestor_tareas.controller;
 
 import com.codeAssasins.gestor_tareas.model.Tarea;
-import com.codeAssasins.gestor_tareas.service.TareaService;
+import com.codeAssasins.gestor_tareas.repository.TareaRepository;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/tareas")
 @CrossOrigin(origins = "*")
 public class TareaController {
 
-    private final TareaService service;
+    private final TareaRepository repository;
 
-    public TareaController(TareaService service) {
-        this.service = service;
+    public TareaController(TareaRepository repository) {
+        this.repository = repository;
+    }
+
+    @GetMapping
+    public List<Tarea> listarTodas() {
+        return repository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Tarea obtenerPorId(@PathVariable Long id) {
+        return repository.findById(id).orElse(null);
     }
 
     @PostMapping
     public Tarea crear(@RequestBody Tarea tarea) {
-        return service.crearTarea(tarea);
-    }
-
-    @PutMapping("/{id}")
-    public Tarea actualizar(@PathVariable Long id, @RequestBody Tarea tarea) {
-        return service.actualizarTarea(id, tarea);
-    }
-
-    @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Long id) {
-        service.eliminarTarea(id);
+        return repository.save(tarea);
     }
 }
