@@ -20,11 +20,8 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(auth -> auth
-                // 1. Dejar la puerta abierta para CORS (Peticiones OPTIONS de Angular)
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                // 2. Dejar la puerta abierta para que Swagger sea público
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                // 3. Exigir login para todo lo demás (Tus endpoints de /api/proyectos y /api/tareas)
                 .anyRequest().authenticated() 
             )
             .httpBasic(Customizer.withDefaults()); 
@@ -34,8 +31,6 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        // Creamos un usuario "admin" con contraseña "admin123"
-        // {noop} indica que la contraseña no está encriptada (solo para pruebas)
         UserDetails admin = User.builder()
             .username("admin")
             .password("{noop}admin123")
