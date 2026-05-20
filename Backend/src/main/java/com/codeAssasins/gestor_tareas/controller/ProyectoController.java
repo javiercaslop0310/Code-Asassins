@@ -1,7 +1,7 @@
 package com.codeAssasins.gestor_tareas.controller;
 
 import com.codeAssasins.gestor_tareas.model.Proyecto;
-import com.codeAssasins.gestor_tareas.repository.ProyectoRepository;
+import com.codeAssasins.gestor_tareas.service.ProyectoService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -10,27 +10,24 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ProyectoController {
 
-    private final ProyectoRepository repository;
+    private final ProyectoService service; 
 
-    public ProyectoController(ProyectoRepository repository) {
-        this.repository = repository;
+    public ProyectoController(ProyectoService service) {
+        this.service = service;
     }
 
-    // Listar todos los proyectos
     @GetMapping
     public List<Proyecto> listarTodos() {
-        return repository.findAll();
+        return service.listarTodos();
     }
 
-    // Ver detalle de un proyecto
     @GetMapping("/{id}")
     public Proyecto obtenerPorId(@PathVariable Long id) {
-        return repository.findById(id).orElse(null);
+        return service.obtenerPorId(id);
     }
 
-    // Crear un nuevo proyecto
     @PostMapping
     public Proyecto crear(@RequestBody Proyecto proyecto) {
-        return repository.save(proyecto);
+        return service.crearProyecto(proyecto);
     }
 }
