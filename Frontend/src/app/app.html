@@ -90,21 +90,6 @@
             <span class="eyebrow">Gestión diaria</span>
             <h2>Tareas activas</h2>
           </div>
-<<<<<<< Updated upstream
-          <div class="filters">
-            <input
-              type="search"
-              placeholder="Buscar tarea..."
-              [ngModel]="searchTerm()"
-              (ngModelChange)="updateSearch($event)"
-            />
-            <select [ngModel]="selectedStatus()" (ngModelChange)="updateStatus($event)">
-              <option value="Todas">Todas</option>
-              <option value="PENDIENTE">Pendiente</option>
-              <option value="EN_PROGRESO">En progreso</option>
-              <option value="COMPLETADA">Completada</option>
-            </select>
-=======
           <div class="panel-header-actions">
             <div class="filters">
               <input
@@ -116,7 +101,7 @@
               <select [ngModel]="selectedStatus()" (ngModelChange)="updateStatus($event)">
                 <option value="Todas">Todas</option>
                 <option value="PENDIENTE">Pendiente</option>
-                <option value="EN PROGRESO">En progreso</option>
+                <option value="EN_PROGRESO">En progreso</option>
                 <option value="COMPLETADA">Completada</option>
               </select>
             </div>
@@ -124,7 +109,6 @@
               <span class="btn-add-icon">+</span>
               <span>Nueva tarea</span>
             </button>
->>>>>>> Stashed changes
           </div>
         </div>
 
@@ -260,7 +244,7 @@
               [disabled]="isSaving()"
             >
               <option value="PENDIENTE">Pendiente</option>
-              <option value="EN PROGRESO">En progreso</option>
+              <option value="EN_PROGRESO">En progreso</option>
               <option value="COMPLETADA">Completada</option>
             </select>
           </div>

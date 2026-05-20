@@ -104,15 +104,8 @@ export class App implements OnInit {
     const status = this.selectedStatus();
 
     return this.tasks().filter((task) => {
-<<<<<<< Updated upstream
-      // Forzamos que sea un texto para evitar errores si llega null o números
-      const taskStatus = String(task.estado || 'PENDIENTE').trim();
-      const matchesStatus = status === 'Todas' || taskStatus.toUpperCase() === status.toUpperCase();
-      
-=======
       const taskStatus = String(task.estado || 'PENDIENTE');
       const matchesStatus = status === 'Todas' || taskStatus.toUpperCase() === status.toUpperCase();
->>>>>>> Stashed changes
       const taskTitle = task.titulo ? String(task.titulo).toLowerCase() : '';
       const matchesTerm = !term || taskTitle.includes(term);
       return matchesStatus && matchesTerm;
@@ -154,11 +147,6 @@ export class App implements OnInit {
   // FIX: reemplaza espacios por guiones para que coincida con las clases CSS
   protected getStatusClass(status?: string): string {
     if (!status) return 'status-pendiente';
-<<<<<<< Updated upstream
-    // Reemplaza múltiples espacios por guiones si los hubiera
-    return `status-${String(status).toLowerCase().trim().replace(/\s+/g, '-')}`;
-=======
     return `status-${status.toLowerCase().replace(/\s+/g, '-')}`;
->>>>>>> Stashed changes
   }
 }
