@@ -1,7 +1,7 @@
 package com.codeAssasins.gestor_tareas.controller;
 
 import com.codeAssasins.gestor_tareas.model.Tarea;
-import com.codeAssasins.gestor_tareas.repository.TareaRepository;
+import com.codeAssasins.gestor_tareas.service.TareaService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -9,15 +9,14 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 public class TareaController {
 
-    private final TareaRepository repository;
+    private final TareaService service;
 
-    public TareaController(TareaRepository repository) {
-        this.repository = repository;
+    public TareaController(TareaService service) {
+        this.service = service;
     }
 
-    // Crear una nueva tarea asignada a un proyecto
     @PostMapping
     public Tarea crear(@RequestBody Tarea tarea) {
-        return repository.save(tarea);
+        return service.crearTarea(tarea);
     }
 }
