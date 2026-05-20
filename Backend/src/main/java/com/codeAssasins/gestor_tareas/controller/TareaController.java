@@ -19,4 +19,14 @@ public class TareaController {
     public Tarea crear(@RequestBody Tarea tarea) {
         return service.crearTarea(tarea);
     }
+
+    @PutMapping("/{id}")
+    public Tarea actualizar(@PathVariable Long id, @RequestBody Tarea tarea) {
+        return service.actualizarTarea(id, tarea);
+    }
+
+    @DeleteMapping("/{id}")
+    public void eliminar(@PathVariable Long id) {
+        service.eliminarTarea(id);
+    }
 }
