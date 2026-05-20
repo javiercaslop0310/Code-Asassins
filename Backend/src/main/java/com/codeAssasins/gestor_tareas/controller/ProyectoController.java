@@ -10,15 +10,18 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ProyectoController {
 
-    private final ProyectoService service; 
+    private final ProyectoService service;
 
     public ProyectoController(ProyectoService service) {
         this.service = service;
     }
 
+    // Mapeo GET actualizado para soportar filtros opcionales: /api/proyectos?nombre=web&estado=ACTIVO
     @GetMapping
-    public List<Proyecto> listarTodos() {
-        return service.listarTodos();
+    public List<Proyecto> listarOFiltrar(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) String estado) {
+        return service.buscarYFiltrar(nombre, estado);
     }
 
     @GetMapping("/{id}")
@@ -29,5 +32,15 @@ public class ProyectoController {
     @PostMapping
     public Proyecto crear(@RequestBody Proyecto proyecto) {
         return service.crearProyecto(proyecto);
+    }
+
+    @PutMapping("/{id}")
+    public Proyecto actualizar(@PathVariable Long id, @RequestBody Proyecto proyecto) {
+        return service.actualizarProyecto(id, proyecto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void eliminar(@PathVariable Long id) {
+        service.eliminarProyecto(id);
     }
 }
