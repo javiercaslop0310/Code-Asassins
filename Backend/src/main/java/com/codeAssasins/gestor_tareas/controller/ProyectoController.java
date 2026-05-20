@@ -2,8 +2,9 @@ package com.codeAssasins.gestor_tareas.controller;
 
 import com.codeAssasins.gestor_tareas.model.Proyecto;
 import com.codeAssasins.gestor_tareas.service.ProyectoService;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/proyectos")
@@ -16,12 +17,15 @@ public class ProyectoController {
         this.service = service;
     }
 
-    // Mapeo GET actualizado para soportar filtros opcionales: /api/proyectos?nombre=web&estado=ACTIVO
+    // AÑADIMOS PARÁMETROS DE PAGINACIÓN AL GET
     @GetMapping
-    public List<Proyecto> listarOFiltrar(
+    public Page<Proyecto> listarOFiltrar(
             @RequestParam(required = false) String nombre,
-            @RequestParam(required = false) String estado) {
-        return service.buscarYFiltrar(nombre, estado);
+            @RequestParam(required = false) String estado,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        return service.buscarYFiltrar(nombre, estado, page, size);
     }
 
     @GetMapping("/{id}")
@@ -30,12 +34,12 @@ public class ProyectoController {
     }
 
     @PostMapping
-    public Proyecto crear(@RequestBody Proyecto proyecto) {
+    public Proyecto crear(@Valid @RequestBody Proyecto proyecto) {
         return service.crearProyecto(proyecto);
     }
 
     @PutMapping("/{id}")
-    public Proyecto actualizar(@PathVariable Long id, @RequestBody Proyecto proyecto) {
+    public Proyecto actualizar(@PathVariable Long id, @Valid @RequestBody Proyecto proyecto) {
         return service.actualizarProyecto(id, proyecto);
     }
 
