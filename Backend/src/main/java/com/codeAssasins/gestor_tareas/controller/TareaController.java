@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/tareas")
+@RequestMapping("/api/tareas") // Esta es la ruta base exacta
 @CrossOrigin(origins = "*")
 public class TareaController {
 
@@ -31,22 +31,31 @@ public class TareaController {
     }
 
     @GetMapping("/{id}")
-    public Tarea obtenerPorId(@PathVariable Long id) {
-        return repository.findById(id).orElse(null);
+    public ResponseEntity<Tarea> obtenerPorId(@PathVariable Long id) {
+        return repository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody Map<String, Object> body) {
-        Long proyectoId = Long.valueOf(body.get("proyectoId").toString());
-        Proyecto proyecto = proyectoRepository.findById(proyectoId)
-            .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
-        Tarea tarea = new Tarea();
-        tarea.setTitulo(body.get("titulo").toString());
-        tarea.setDescripcion(body.getOrDefault("descripcion", "").toString());
-        tarea.setEstado(body.getOrDefault("estado", "PENDIENTE").toString());
-        tarea.setPrioridad(body.getOrDefault("prioridad", "MEDIA").toString());
-        tarea.setProyecto(proyecto);
-        return ResponseEntity.ok(tareaService.crearTarea(tarea));
+        try {
+            // Conversión segura de ID
+            Long proyectoId = Long.valueOf(body.get("proyectoId").toString());
+            Proyecto proyecto = proyectoRepository.findById(proyectoId)
+                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+            
+            Tarea tarea = new Tarea();
+            tarea.setTitulo(body.get("titulo").toString());
+            tarea.setDescripcion(body.getOrDefault("descripcion", "").toString());
+            tarea.setEstado(body.getOrDefault("estado", "PENDIENTE").toString());
+            tarea.setPrioridad(body.getOrDefault("prioridad", "MEDIA").toString());
+            tarea.setProyecto(proyecto);
+            
+            return ResponseEntity.ok(tareaService.crearTarea(tarea));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Error al crear tarea: " + e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
