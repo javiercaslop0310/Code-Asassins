@@ -9,22 +9,10 @@
     </a>
 
     <nav class="nav-list">
-      <a class="nav-item active" href="#overview">
-        <span>⌘</span>
-        Panel
-      </a>
-      <a class="nav-item" href="#projects">
-        <span>◈</span>
-        Proyectos
-      </a>
-      <a class="nav-item" href="#tasks">
-        <span>☑</span>
-        Tareas
-      </a>
-      <a class="nav-item" href="#analytics">
-        <span>↗</span>
-        Analítica
-      </a>
+      <a class="nav-item active" href="#overview"><span>⌘</span> Panel</a>
+      <a class="nav-item" href="#projects"><span>◈</span> Proyectos</a>
+      <a class="nav-item" href="#tasks"><span>☑</span> Tareas</a>
+      <a class="nav-item" href="#analytics"><span>↗</span> Analítica</a>
     </nav>
 
     <div class="sidebar-card">
@@ -39,9 +27,7 @@
       <div>
         <span class="eyebrow">Workspace académico</span>
         <h1>Organiza tus proyectos sin perder el foco.</h1>
-        <p>
-          Un frontend moderno, responsive y conectado 100% con los endpoints de Spring Boot.
-        </p>
+        <p>Un frontend moderno, responsive y conectado 100% con los endpoints de Spring Boot.</p>
         <div class="hero-actions">
           <a class="btn primary" href="#tasks">Ver tareas</a>
           <a class="btn secondary" href="#projects">Explorar proyectos</a>
@@ -101,7 +87,7 @@
               <select [ngModel]="selectedStatus()" (ngModelChange)="updateStatus($event)">
                 <option value="Todas">Todas</option>
                 <option value="PENDIENTE">Pendiente</option>
-                <option value="EN_PROGRESO">En progreso</option>
+                <option value="EN PROGRESO">En progreso</option>
                 <option value="COMPLETADA">Completada</option>
               </select>
             </div>
@@ -113,7 +99,7 @@
         </div>
 
         <div class="task-list">
-          @for (task of filteredTasks(); track task) {
+          @for (task of filteredTasks(); track task.id ?? $index) {
             <article class="task-card">
               <div class="task-main">
                 <div class="task-icon">{{ getIcon(task.titulo) }}</div>
@@ -122,15 +108,13 @@
                   <p>{{ task.descripcion || 'Sin descripción asignada' }}</p>
                 </div>
               </div>
-
               <div class="task-meta">
                 <span class="badge" [ngClass]="getStatusClass(task.estado)">{{ task.estado || 'PENDIENTE' }}</span>
                 <span class="badge" [ngClass]="getPriorityClass(task.prioridad)">{{ task.prioridad || 'MEDIA' }}</span>
                 <time>{{ task.fechaLimite || 'Sin fecha límite' }}</time>
               </div>
-
               <div class="progress" aria-label="Progreso de tarea">
-                <span [style.width.%]="task.estado === 'COMPLETADA' ? 100 : (task.estado === 'EN_PROGRESO' ? 50 : 0)"></span>
+                <span [style.width.%]="task.estado === 'COMPLETADA' ? 100 : (task.estado === 'EN PROGRESO' || task.estado === 'EN_PROGRESO' ? 50 : 0)"></span>
               </div>
             </article>
           } @empty {
@@ -149,9 +133,8 @@
             <h2>Proyectos</h2>
           </div>
         </div>
-
         <div class="project-list">
-          @for (project of projects(); track project) {
+          @for (project of projects(); track project.id) {
             <article class="project-card">
               <div class="project-topline">
                 <h3>{{ project.nombre }}</h3>
@@ -196,103 +179,5 @@
     </section>
   </main>
 </div>
-
-<!-- MODAL: Nueva tarea -->
-@if (showModal()) {
-  <div class="modal-backdrop" (click)="closeModal()" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <div class="modal-box" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <div>
-          <span class="eyebrow">Gestión diaria</span>
-          <h2 id="modal-title">Nueva tarea</h2>
-        </div>
-        <button class="modal-close" (click)="closeModal()" aria-label="Cerrar">✕</button>
-      </div>
-
-      <div class="modal-body">
-        <div class="field">
-          <label for="task-titulo">Título <span class="required">*</span></label>
-          <input
-            id="task-titulo"
-            type="text"
-            placeholder="Ej: Implementar endpoint GET /tareas"
-            [ngModel]="newTask().titulo"
-            (ngModelChange)="updateNewTask('titulo', $event)"
-            [disabled]="isSaving()"
-          />
-        </div>
-
-        <div class="field">
-          <label for="task-desc">Descripción</label>
-          <textarea
-            id="task-desc"
-            placeholder="Descripción opcional de la tarea..."
-            rows="3"
-            [ngModel]="newTask().descripcion"
-            (ngModelChange)="updateNewTask('descripcion', $event)"
-            [disabled]="isSaving()"
-          ></textarea>
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label for="task-estado">Estado</label>
-            <select
-              id="task-estado"
-              [ngModel]="newTask().estado"
-              (ngModelChange)="updateNewTask('estado', $event)"
-              [disabled]="isSaving()"
-            >
-              <option value="PENDIENTE">Pendiente</option>
-              <option value="EN_PROGRESO">En progreso</option>
-              <option value="COMPLETADA">Completada</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="task-prioridad">Prioridad</label>
-            <select
-              id="task-prioridad"
-              [ngModel]="newTask().prioridad"
-              (ngModelChange)="updateNewTask('prioridad', $event)"
-              [disabled]="isSaving()"
-            >
-              <option value="BAJA">Baja</option>
-              <option value="MEDIA">Media</option>
-              <option value="ALTA">Alta</option>
-              <option value="URGENTE">Urgente</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="task-fecha">Fecha límite</label>
-          <input
-            id="task-fecha"
-            type="date"
-            [ngModel]="newTask().fechaLimite"
-            (ngModelChange)="updateNewTask('fechaLimite', $event)"
-            [disabled]="isSaving()"
-          />
-        </div>
-
-        @if (saveError()) {
-          <div class="form-error" role="alert">⚠ {{ saveError() }}</div>
-        }
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn-cancel" (click)="closeModal()" [disabled]="isSaving()">Cancelar</button>
-        <button class="btn-save" (click)="submitTask()" [disabled]="isSaving()">
-          @if (isSaving()) {
-            <span class="spinner"></span> Guardando…
-          } @else {
-            Crear tarea
-          }
-        </button>
-      </div>
-    </div>
-  </div>
-}
 
 <router-outlet />

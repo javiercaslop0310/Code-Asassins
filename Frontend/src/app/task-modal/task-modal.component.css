@@ -1,0 +1,207 @@
+/* El componente se monta directamente en el <body>,
+   así ningún backdrop-filter padre puede bloquearlo */
+
+.tf-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+  animation: tf-fade 0.18s ease;
+}
+
+@keyframes tf-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.tf-modal {
+  width: min(560px, 100%);
+  border-radius: 32px;
+  background: #fff;
+  box-shadow: 0 32px 80px rgba(15, 23, 42, 0.24);
+  overflow: hidden;
+  animation: tf-slide 0.22s ease;
+}
+
+@keyframes tf-slide {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* Header */
+.tf-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 28px 28px 0;
+}
+
+.tf-eyebrow {
+  display: inline-block;
+  margin-bottom: 4px;
+  color: #6366f1;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.tf-modal-header h2 {
+  margin: 0;
+  font-size: 1.55rem;
+  letter-spacing: -0.03em;
+  color: #172033;
+}
+
+.tf-close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-top: 2px;
+  border: none;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 1rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.tf-close:hover:not(:disabled) { background: #e2e8f0; color: #172033; }
+.tf-close:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Body */
+.tf-modal-body {
+  display: grid;
+  gap: 18px;
+  padding: 24px 28px;
+}
+
+.tf-field {
+  display: grid;
+  gap: 6px;
+}
+
+.tf-field label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #374151;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tf-required { color: #e11d48; }
+
+.tf-field input,
+.tf-field select,
+.tf-field textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  color: #172033;
+  background: #f8fafc;
+  outline: none;
+  font-family: inherit;
+  resize: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+
+.tf-field input:focus,
+.tf-field select:focus,
+.tf-field textarea:focus {
+  border-color: #6366f1;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+}
+
+.tf-field input:disabled,
+.tf-field select:disabled,
+.tf-field textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tf-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.tf-error {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+/* Footer */
+.tf-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 0 28px 28px;
+}
+
+.tf-btn-cancel {
+  padding: 11px 22px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  background: #fff;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.tf-btn-cancel:hover:not(:disabled) { background: #f1f5f9; }
+.tf-btn-cancel:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.tf-btn-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 26px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4f46e5, #06b6d4);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.92rem;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+  transition: opacity 0.15s;
+}
+.tf-btn-save:hover:not(:disabled) { opacity: 0.88; }
+.tf-btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.tf-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: tf-spin 0.65s linear infinite;
+}
+@keyframes tf-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 540px) {
+  .tf-field-row { grid-template-columns: 1fr; }
+  .tf-modal-header,
+  .tf-modal-body { padding-left: 20px; padding-right: 20px; }
+  .tf-modal-footer { padding: 0 20px 20px; }
+}

@@ -1,0 +1,82 @@
+<div class="tf-backdrop" (click)="close()">
+  <div class="tf-modal" (click)="$event.stopPropagation()">
+
+    <div class="tf-modal-header">
+      <div>
+        <span class="tf-eyebrow">Gestión diaria</span>
+        <h2>Nueva tarea</h2>
+      </div>
+      <button class="tf-close" (click)="close()" [disabled]="isSaving()">✕</button>
+    </div>
+
+    <div class="tf-modal-body">
+      <div class="tf-field">
+        <label>Título <span class="tf-required">*</span></label>
+        <input
+          type="text"
+          placeholder="Ej: Implementar endpoint GET /tareas"
+          [ngModel]="newTask().titulo"
+          (ngModelChange)="updateField('titulo', $event)"
+          [disabled]="isSaving()"
+        />
+      </div>
+
+      <div class="tf-field">
+        <label>Descripción</label>
+        <textarea
+          placeholder="Descripción opcional..."
+          rows="3"
+          [ngModel]="newTask().descripcion"
+          (ngModelChange)="updateField('descripcion', $event)"
+          [disabled]="isSaving()"
+        ></textarea>
+      </div>
+
+      <div class="tf-field-row">
+        <div class="tf-field">
+          <label>Estado</label>
+          <select [ngModel]="newTask().estado" (ngModelChange)="updateField('estado', $event)" [disabled]="isSaving()">
+            <option value="PENDIENTE">Pendiente</option>
+            <option value="EN PROGRESO">En progreso</option>
+            <option value="COMPLETADA">Completada</option>
+          </select>
+        </div>
+        <div class="tf-field">
+          <label>Prioridad</label>
+          <select [ngModel]="newTask().prioridad" (ngModelChange)="updateField('prioridad', $event)" [disabled]="isSaving()">
+            <option value="BAJA">Baja</option>
+            <option value="MEDIA">Media</option>
+            <option value="ALTA">Alta</option>
+            <option value="URGENTE">Urgente</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="tf-field">
+        <label>Fecha límite</label>
+        <input
+          type="date"
+          [ngModel]="newTask().fechaLimite"
+          (ngModelChange)="updateField('fechaLimite', $event)"
+          [disabled]="isSaving()"
+        />
+      </div>
+
+      @if (saveError()) {
+        <div class="tf-error">⚠ {{ saveError() }}</div>
+      }
+    </div>
+
+    <div class="tf-modal-footer">
+      <button class="tf-btn-cancel" (click)="close()" [disabled]="isSaving()">Cancelar</button>
+      <button class="tf-btn-save" (click)="submit()" [disabled]="isSaving()">
+        @if (isSaving()) {
+          <span class="tf-spinner"></span> Guardando…
+        } @else {
+          Crear tarea
+        }
+      </button>
+    </div>
+
+  </div>
+</div>
