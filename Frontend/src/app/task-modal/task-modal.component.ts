@@ -47,6 +47,7 @@ export class TaskModalComponent implements OnInit {
     });
   }
 
+
   protected close(): void {
     if (this.isSaving()) return;
     this.onClose();

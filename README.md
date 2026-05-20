@@ -1,111 +1,212 @@
-# Code-Asassins
-# Gestor de Proyectos y Tareas - Prueba Técnica NTT Data
+# Code-Assassins — Gestor de Proyectos y Tareas
 
-Este repositorio contiene el sistema fullstack de gestión de proyectos y tareas diseñado para la evaluación técnica de NTT Data. El proyecto implementa una arquitectura en tres capas, persistencia de datos relacional, validaciones estrictas y seguridad mediante Spring Security.
-
----
-
-## 1. Arquitectura y Diseño del Sistema
-
-El backend ha sido desarrollado siguiendo un patrón de arquitectura MVC estructurado en tres capas principales para garantizar la escalabilidad y el mantenimiento del código:
-
-* **Controladores (@RestController):** Gestionan las peticiones HTTP, validan la entrada de datos a través de Jakarta Validation y devuelven las respuestas estructuradas en formato JSON.
-* **Servicios (@Service):** Centralizan la lógica de negocio. Se encargan de la asignación automática de fechas, gestión de estados por defecto y procesamiento de filtros de búsqueda.
-* **Repositorios (@Repository):** Interfaces basadas en Spring Data JPA que abstraen las operaciones de la base de datos H2.
+Sistema fullstack de gestión de proyectos y tareas desarrollado para la prueba técnica de NTT Data. Implementa una arquitectura en tres capas con persistencia relacional, autenticación Basic Auth y un frontend moderno en Angular 21 con Signals.
 
 ---
 
-## 2. Stack Tecnológico
+## Stack tecnológico
 
-**Backend:**
-* Java 17 (LTS)
-* Spring Boot 3.2.12
-* Spring Data JPA & Hibernate
-* Spring Security (Basic Authentication)
-* Spring Validation (JSR 380)
-* Springdoc OpenAPI (Swagger UI)
-* Base de datos H2 (In-memory)
-* Lombok
+**Backend**
+- Java 17 · Spring Boot 3.2 · Spring Data JPA · Hibernate
+- Spring Security (Basic Auth) · Spring Validation (JSR 380)
+- Springdoc OpenAPI (Swagger UI)
+- Base de datos H2 en memoria (inicializada con `gestor_de_tareas.sql`)
 
-**Frontend:**
-* Angular 21 (Standalone Components, Signals)
-* Node.js & npm
+**Frontend**
+- Angular 21 — Standalone Components, Signals, Control Flow (`@for`, `@if`)
+- FormsModule (`ngModel`) · HttpClient
+- CSS custom (sin librerías de UI externas)
 
 ---
 
-## 3. Base de Datos y Persistencia
+## Arranque local
 
-El sistema utiliza una base de datos relacional en memoria (H2) que se autoconfigura e inicializa mediante el script `gestor_de_tareas.sql` al arrancar la aplicación.
+### 1. Backend
 
-**Modelo Relacional (1:N):**
-* **Proyectos:** Entidad principal. Cuenta con eliminación en cascada (`CascadeType.ALL`), lo que significa que al eliminar un proyecto, se eliminan automáticamente todas sus tareas asociadas.
-* **Tareas:** Entidad hija. Contiene una clave foránea referenciando al proyecto padre. La serialización JSON está protegida con `@JsonIgnore` para evitar ciclos de recursividad.
+```bash
+cd Backend
 
----
+# Windows
+.\mvnw spring-boot:run
 
-## 4. Seguridad y Autenticación
+# Linux / macOS
+./mvnw spring-boot:run
+```
 
-La API REST está protegida globalmente mediante Spring Security.
+El servidor arranca en `http://localhost:8080`.
 
-* **Autenticación requerida:** Se utiliza autenticación básica (Basic Auth) para todos los endpoints de negocio (`/api/proyectos` y `/api/tareas`).
-* **Credenciales de acceso:** * Usuario: `admin`
-    * Contraseña: `admin123`
-* **CORS y Accesibilidad:** Las peticiones `OPTIONS` (necesarias para la integración con Angular) y las rutas de documentación de Swagger han sido configuradas como públicas (`permitAll()`).
+> **Credenciales de acceso a la API:**
+> - Usuario: `admin`
+> - Contraseña: `admin123`
 
----
+### 2. Frontend
 
-## 5. Manejo Global de Excepciones
+```bash
+cd Frontend
+npm install
+ng serve
+```
 
-El sistema incluye un interceptor global (`@ControllerAdvice`) que formatea los errores del servidor antes de devolverlos al cliente:
+La aplicación queda disponible en `http://localhost:4200`.
 
-* **HTTP 400 (Bad Request):** Lanzado cuando no se superan las validaciones de datos (ej. omitir el nombre obligatorio de un proyecto). Devuelve un JSON detallando el campo y el motivo del error.
-* **HTTP 404 (Not Found):** Lanzado cuando se intenta buscar, editar o eliminar un registro cuyo ID no existe en la base de datos.
-
----
-
-## 6. Documentación de la API (Swagger)
-
-La documentación interactiva de los endpoints se genera automáticamente. Una vez iniciado el servidor backend, se puede acceder a la interfaz gráfica en la siguiente ruta:
-
-* **URL:** `http://localhost:8080/swagger-ui/index.html`
-
-Desde esta interfaz es posible visualizar los contratos de datos y ejecutar peticiones de prueba utilizando las credenciales de administrador mencionadas anteriormente.
+> El backend debe estar corriendo antes de usar el frontend.
 
 ---
 
-## 7. Catálogo de Endpoints REST
+## Arquitectura del proyecto
 
-### Módulo de Proyectos (`/api/proyectos`)
+```
+Code-Assassins/
+├── Backend/
+│   └── src/main/java/com/codeAssasins/gestor_tareas/
+│       ├── controller/       # TareaController, ProyectoController
+│       ├── service/          # TareaService, ProyectoService
+│       ├── repository/       # TareaRepository, ProyectoRepository
+│       ├── model/            # Tarea, Proyecto
+│       ├── config/           # SecurityConfig, SwaggerConfig
+│       └── exception/        # GlobalExceptionHandler
+└── Frontend/
+    └── src/app/
+        ├── app.ts            # Componente raíz, lógica principal
+        ├── app.html          # Template del dashboard
+        ├── app.css           # Estilos globales
+        ├── task-modal/       # Modal de creación de tareas
+        │   ├── task-modal.component.ts
+        │   ├── task-modal.component.html
+        │   └── task-modal.component.css
+        ├── services/
+        │   ├── tarea.ts
+        │   └── proyecto.ts
+        └── models/
+            └── interfaces.ts
+```
 
-| Método | Ruta | Descripción | Parámetros Query |
+---
+
+## Modelo de datos
+
+### Relación entre entidades
+
+```
+Proyecto (1) ──────── (N) Tarea
+```
+
+Un proyecto puede tener múltiples tareas. Al eliminar un proyecto, sus tareas se eliminan en cascada (`CascadeType.ALL`).
+
+### Proyecto
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `id` | Long | Generado automáticamente |
+| `nombre` | String | Obligatorio |
+| `descripcion` | String | Opcional |
+| `estado` | String | Ej: `ACTIVO`, `PAUSADO`, `FINALIZADO` |
+| `fechaInicio` | String | Opcional |
+| `fechaFin` | String | Opcional |
+
+### Tarea
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `id` | Long | Generado automáticamente |
+| `titulo` | String | Obligatorio |
+| `descripcion` | String | Opcional |
+| `estado` | String | `PENDIENTE`, `EN PROGRESO`, `COMPLETADA` |
+| `prioridad` | String | `BAJA`, `MEDIA`, `ALTA`, `URGENTE` |
+| `fechaLimite` | String | Opcional |
+| `completadaEn` | String | Se asigna automáticamente al pasar a `COMPLETADA` |
+| `proyecto.id` | Long | Obligatorio — referencia al proyecto padre |
+
+---
+
+## Endpoints REST
+
+### Proyectos — `/api/proyectos`
+
+| Método | Ruta | Descripción | Query params |
 |---|---|---|---|
-| **GET** | `/api/proyectos` | Lista todos los proyectos. | `nombre`, `estado` (Opcionales) |
-| **GET** | `/api/proyectos/{id}` | Muestra el detalle de un proyecto y sus tareas. | Ninguno |
-| **POST** | `/api/proyectos` | Crea un nuevo proyecto. | Ninguno |
-| **PUT** | `/api/proyectos/{id}` | Actualiza los datos de un proyecto existente. | Ninguno |
-| **DELETE** | `/api/proyectos/{id}` | Elimina un proyecto y sus tareas en cascada. | Ninguno |
+| GET | `/api/proyectos` | Lista todos los proyectos | `nombre`, `estado` (opcionales) |
+| GET | `/api/proyectos/{id}` | Detalle de un proyecto con sus tareas | — |
+| POST | `/api/proyectos` | Crea un nuevo proyecto | — |
+| PUT | `/api/proyectos/{id}` | Actualiza un proyecto existente | — |
+| DELETE | `/api/proyectos/{id}` | Elimina el proyecto y sus tareas en cascada | — |
 
-### Módulo de Tareas (`/api/tareas`)
+### Tareas — `/api/tareas`
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| **POST** | `/api/tareas` | Crea una tarea asignada a un proyecto (requiere `proyecto.id` en el JSON). |
-| **PUT** | `/api/tareas/{id}` | Actualiza una tarea. Si el estado es "COMPLETADA", registra la fecha actual. |
-| **DELETE** | `/api/tareas/{id}` | Elimina una tarea de forma individual. |
+| GET | `/api/tareas` | Lista todas las tareas |
+| GET | `/api/tareas/{id}` | Detalle de una tarea |
+| POST | `/api/tareas` | Crea una tarea (requiere `proyectoId` en el body) |
+| PUT | `/api/tareas/{id}` | Actualiza una tarea |
+| DELETE | `/api/tareas/{id}` | Elimina una tarea |
+
+**Body de ejemplo para POST `/api/tareas`:**
+```json
+{
+  "titulo": "Implementar endpoint GET",
+  "descripcion": "Revisar controlador de tareas",
+  "estado": "PENDIENTE",
+  "prioridad": "ALTA",
+  "proyectoId": 1
+}
+```
 
 ---
 
-## 8. Instrucciones de Arranque Local
+## Seguridad
 
-### Despliegue del Backend
-1. Navegar al directorio del backend: `cd Backend`
-2. Ejecutar la aplicación mediante Maven Wrapper:
-   * **Windows:** `.\mvnw spring-boot:run`
-   * **Linux/macOS:** `./mvnw spring-boot:run`
-3. El servidor iniciará en `http://localhost:8080`.
+Todos los endpoints bajo `/api/**` requieren autenticación Basic Auth. Las rutas de Swagger y las peticiones `OPTIONS` (preflight CORS) son públicas.
 
-### Despliegue del Frontend
-1. Navegar al directorio del frontend: `cd Frontend`
-2. Instalar las dependencias del proyecto: `npm install`
-3. Iniciar el servidor de desarrollo: `ng serve`
-4. Acceder a la aplicación desde el navegador: `http://localhost:4200`
+| Ruta | Acceso |
+|---|---|
+| `/api/**` | Requiere `admin` / `admin123` |
+| `/swagger-ui/**` | Público |
+| `/v3/api-docs/**` | Público |
+| `OPTIONS /**` | Público (CORS preflight) |
+
+---
+
+## Documentación interactiva (Swagger)
+
+Con el backend arrancado, accede a:
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
+Usa las credenciales `admin` / `admin123` para autenticarte y probar los endpoints directamente desde el navegador.
+
+---
+
+## Base de datos
+
+La BD H2 se inicializa automáticamente al arrancar con el script `Backend/src/main/resources/gestor_de_tareas.sql`.
+
+Consola web H2 disponible en `http://localhost:8080/h2-console` con:
+- JDBC URL: `jdbc:h2:mem:gestordb`
+- Usuario: `sa`
+- Contraseña: *(vacía)*
+
+---
+
+## Funcionalidades del frontend
+
+- **Dashboard** con contadores en tiempo real de tareas totales, en progreso, completadas y pendientes
+- **Panel de tareas** con búsqueda por título y filtro por estado
+- **Panel de proyectos** con listado de proyectos y tareas asociadas
+- **Modal de nueva tarea** — se abre sobre el `<body>` para evitar conflictos con `backdrop-filter`; carga los proyectos disponibles dinámicamente y requiere seleccionar uno antes de guardar
+- **Indicador de progreso** visual por tarea según su estado
+- Diseño responsive con soporte para móvil y tablet
+
+---
+
+## Manejo de errores
+
+El backend incluye un `@ControllerAdvice` global que devuelve respuestas estructuradas:
+
+| Código | Causa |
+|---|---|
+| `400 Bad Request` | Validación fallida (campo obligatorio ausente, formato incorrecto) |
+| `404 Not Found` | Recurso inexistente por ID |
+| `500 Internal Server Error` | Error inesperado del servidor |
