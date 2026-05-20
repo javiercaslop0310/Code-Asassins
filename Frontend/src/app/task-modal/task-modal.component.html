@@ -10,13 +10,13 @@
     </div>
 
     <div class="tf-modal-body">
+
       <div class="tf-field">
         <label>Título <span class="tf-required">*</span></label>
         <input
           type="text"
           placeholder="Ej: Implementar endpoint GET /tareas"
-          [ngModel]="newTask().titulo"
-          (ngModelChange)="updateField('titulo', $event)"
+          [(ngModel)]="titulo"
           [disabled]="isSaving()"
         />
       </div>
@@ -26,16 +26,31 @@
         <textarea
           placeholder="Descripción opcional..."
           rows="3"
-          [ngModel]="newTask().descripcion"
-          (ngModelChange)="updateField('descripcion', $event)"
+          [(ngModel)]="descripcion"
           [disabled]="isSaving()"
         ></textarea>
+      </div>
+
+      <!-- Proyecto (obligatorio por el backend) -->
+      <div class="tf-field">
+        <label>Proyecto <span class="tf-required">*</span></label>
+        @if (loadingProyectos()) {
+          <div class="tf-loading">Cargando proyectos…</div>
+        } @else if (proyectosDisponibles.length === 0) {
+          <div class="tf-warning">⚠ No hay proyectos. Crea uno antes de añadir tareas.</div>
+        } @else {
+          <select [(ngModel)]="proyectoId" [disabled]="isSaving()">
+            @for (p of proyectosDisponibles; track p.id) {
+              <option [value]="p.id">{{ p.nombre }}</option>
+            }
+          </select>
+        }
       </div>
 
       <div class="tf-field-row">
         <div class="tf-field">
           <label>Estado</label>
-          <select [ngModel]="newTask().estado" (ngModelChange)="updateField('estado', $event)" [disabled]="isSaving()">
+          <select [(ngModel)]="estado" [disabled]="isSaving()">
             <option value="PENDIENTE">Pendiente</option>
             <option value="EN PROGRESO">En progreso</option>
             <option value="COMPLETADA">Completada</option>
@@ -43,7 +58,7 @@
         </div>
         <div class="tf-field">
           <label>Prioridad</label>
-          <select [ngModel]="newTask().prioridad" (ngModelChange)="updateField('prioridad', $event)" [disabled]="isSaving()">
+          <select [(ngModel)]="prioridad" [disabled]="isSaving()">
             <option value="BAJA">Baja</option>
             <option value="MEDIA">Media</option>
             <option value="ALTA">Alta</option>
@@ -56,8 +71,7 @@
         <label>Fecha límite</label>
         <input
           type="date"
-          [ngModel]="newTask().fechaLimite"
-          (ngModelChange)="updateField('fechaLimite', $event)"
+          [(ngModel)]="fechaLimite"
           [disabled]="isSaving()"
         />
       </div>
@@ -69,7 +83,11 @@
 
     <div class="tf-modal-footer">
       <button class="tf-btn-cancel" (click)="close()" [disabled]="isSaving()">Cancelar</button>
-      <button class="tf-btn-save" (click)="submit()" [disabled]="isSaving()">
+      <button
+        class="tf-btn-save"
+        (click)="submit()"
+        [disabled]="isSaving() || loadingProyectos() || proyectosDisponibles.length === 0"
+      >
         @if (isSaving()) {
           <span class="tf-spinner"></span> Guardando…
         } @else {

@@ -205,3 +205,21 @@
   .tf-modal-body { padding-left: 20px; padding-right: 20px; }
   .tf-modal-footer { padding: 0 20px 20px; }
 }
+
+.tf-loading {
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 0.92rem;
+}
+
+.tf-warning {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
