@@ -1,6 +1,7 @@
 package com.codeAssasins.gestor_tareas.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,7 +15,9 @@ public class Proyecto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @NotBlank(message = "El nombre del proyecto es obligatorio")
     private String nombre;
+    
     private String descripcion;
     private String estado;
     
