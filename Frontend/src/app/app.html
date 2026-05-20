@@ -100,19 +100,19 @@
             <select [ngModel]="selectedStatus()" (ngModelChange)="updateStatus($event)">
               <option value="Todas">Todas</option>
               <option value="PENDIENTE">Pendiente</option>
-              <option value="EN PROGRESO">En progreso</option>
+              <option value="EN_PROGRESO">En progreso</option>
               <option value="COMPLETADA">Completada</option>
             </select>
           </div>
         </div>
 
         <div class="task-list">
-          @for (task of filteredTasks(); track task.id || $index) {
+          @for (task of filteredTasks(); track task) {
             <article class="task-card">
               <div class="task-main">
-                <div class="task-icon">{{ task.titulo ? task.titulo.charAt(0).toUpperCase() : 'T' }}</div>
+                <div class="task-icon">{{ getIcon(task.titulo) }}</div>
                 <div>
-                  <h3>{{ task.titulo }}</h3>
+                  <h3>{{ task.titulo || 'Sin título' }}</h3>
                   <p>{{ task.descripcion || 'Sin descripción asignada' }}</p>
                 </div>
               </div>
@@ -124,7 +124,7 @@
               </div>
 
               <div class="progress" aria-label="Progreso de tarea">
-                <span [style.width.%]="task.estado === 'COMPLETADA' ? 100 : (task.estado === 'EN PROGRESO' ? 50 : 0)"></span>
+                <span [style.width.%]="task.estado === 'COMPLETADA' ? 100 : (task.estado === 'EN_PROGRESO' ? 50 : 0)"></span>
               </div>
             </article>
           } @empty {
@@ -145,7 +145,7 @@
         </div>
 
         <div class="project-list">
-          @for (project of projects(); track project.id) {
+          @for (project of projects(); track project) {
             <article class="project-card">
               <div class="project-topline">
                 <h3>{{ project.nombre }}</h3>
