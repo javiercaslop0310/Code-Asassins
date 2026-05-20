@@ -2,7 +2,6 @@ package com.codeAssasins.gestor_tareas.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +14,6 @@ public class Tarea {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotBlank(message = "El título de la tarea es obligatorio")
     private String titulo;
     
     private String descripcion;
