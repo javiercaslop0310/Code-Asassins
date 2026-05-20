@@ -19,7 +19,6 @@ export class App implements OnInit {
   protected readonly searchTerm = signal('');
   protected readonly selectedStatus = signal<string>('Todas');
 
-  // Inicializamos los signals vacíos
   protected readonly projects = signal<Proyecto[]>([]);
   protected readonly tasks = signal<Tarea[]>([]);
 
@@ -28,13 +27,11 @@ export class App implements OnInit {
   }
 
   private cargarDatos(): void {
-    // 1. Obtener los proyectos reales
     this.proyectoService.obtenerProyectos().subscribe({
       next: (data) => this.projects.set(data),
       error: (err) => console.error('Error al cargar proyectos:', err)
     });
 
-    // 2. Obtener las tareas reales
     this.tareaService.obtenerTareas().subscribe({
       next: (data) => this.tasks.set(data),
       error: (err) => console.error('Error al cargar tareas:', err)
@@ -47,11 +44,10 @@ export class App implements OnInit {
     const status = this.selectedStatus();
 
     return this.tasks().filter((task) => {
-      // Escudo 1: Aseguramos que el estado sea un texto válido
-      const taskStatus = String(task.estado || 'PENDIENTE');
+      // Forzamos que sea un texto para evitar errores si llega null o números
+      const taskStatus = String(task.estado || 'PENDIENTE').trim();
       const matchesStatus = status === 'Todas' || taskStatus.toUpperCase() === status.toUpperCase();
       
-      // Escudo 2: Convertimos a String por si desde el backend llega un número o algo raro
       const taskTitle = task.titulo ? String(task.titulo).toLowerCase() : '';
       const matchesTerm = !term || taskTitle.includes(term);
 
@@ -60,15 +56,15 @@ export class App implements OnInit {
   });
 
   protected readonly completedTasks = computed(
-    () => this.tasks().filter((task) => task.estado === 'COMPLETADA').length
+    () => this.tasks().filter((task) => String(task.estado).toUpperCase() === 'COMPLETADA').length
   );
 
   protected readonly inProgressTasks = computed(
-    () => this.tasks().filter((task) => task.estado === 'EN PROGRESO').length
+    () => this.tasks().filter((task) => String(task.estado).toUpperCase() === 'EN_PROGRESO').length
   );
 
   protected readonly pendingTasks = computed(
-    () => this.tasks().filter((task) => !task.estado || task.estado === 'PENDIENTE').length
+    () => this.tasks().filter((task) => !task.estado || String(task.estado).toUpperCase() === 'PENDIENTE').length
   );
 
   protected updateSearch(value: string): void {
@@ -79,13 +75,21 @@ export class App implements OnInit {
     this.selectedStatus.set(value);
   }
 
+  // --- ESCUDOS DE RENDERIZADO PARA EL HTML ---
+  
+  protected getIcon(titulo?: string): string {
+    if (!titulo) return 'T';
+    return String(titulo).charAt(0).toUpperCase();
+  }
+
   protected getPriorityClass(priority?: string): string {
     if (!priority) return 'priority-baja';
-    return `priority-${priority.toLowerCase()}`;
+    return `priority-${String(priority).toLowerCase().trim()}`;
   }
 
   protected getStatusClass(status?: string): string {
     if (!status) return 'status-pendiente';
-    return `status-${status.toLowerCase().replace(' ', '-')}`;
+    // Reemplaza múltiples espacios por guiones si los hubiera
+    return `status-${String(status).toLowerCase().trim().replace(/\s+/g, '-')}`;
   }
 }
